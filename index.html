@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hope Clinique</title>
+    <style>
+        /* --- Variables et Reset --- */
+        :root {
+            --primary-color: #2ecc71;
+            --primary-dark: #27ae60;
+            --secondary-color: #34495e;
+            --bg-color: #f4f7f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--secondary-color);
+            line-height: 1.6;
+        }
+
+        /* --- Bannière avec Carousel (Largeur réduite) --- */
+        header {
+            position: relative;
+            height: 250px;
+            max-width: 1100px;
+            margin: 20px auto 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+            z-index: 2;
+        }
+
+        header h1, header p, header .btn-personnel {
+            position: relative;
+            z-index: 3;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-weight: bold;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            font-weight: normal;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        /* --- Bouton sur la bannière --- */
+        .btn-personnel {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            font-family: 'Times New Roman', Times, serif;
+            border-radius: 5px;
+            border: 2px solid var(--white);
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-personnel:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* --- Conteneur Principal --- */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto 50px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- Carte du Formulaire --- */
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            margin-bottom: 30px;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .card h2 {
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        /* --- Grille de Formulaire --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .form-group input, 
+        .form-group select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Times New Roman', Times, serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(46, 204, 113, 0.3);
+        }
+
+        /* --- Boutons --- */
+        .btn-submit {
+            grid-column: 1 / -1;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Times New Roman', Times, serif;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* --- Tableau des Patients --- */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: var(--secondary-color);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: 'Times New Roman', Times, serif;
+            white-space: nowrap;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            header { height: 220px; }
+            header h1 { font-size: 1.6rem; }
+            header p { font-size: 0.9rem; }
+            .btn-personnel { padding: 8px 18px; font-size: 0.9rem; }
+            .card { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bannière avec Carousel et Bouton -->
+    <header>
+        <div class="carousel" id="carousel">
+            <div class="carousel-slide active" style="background-image: url('doc.jpg');"></div>
+            <div class="carousel-slide" style="background-image: url('doc1.jpg');"></div>
+            <div class="carousel-slide" style="background-image: url('doc.jpg');"></div>
+        </div>
+        <div class="carousel-overlay"></div>
+        <h1>Hope Clinique</h1>
+        <p>Système de Gestion des Patients</p>
+        <a href="personnel.html" class="btn-personnel">Gestion du Personnel</a>
+    </header>
+
+    <div class="container">
+        <!-- Formulaire d'identification -->
+        <div class="card">
+            <h2>Identification du Patient</h2>
+            <form id="patientForm">
+                <div class="form-grid">
+                    <!-- Nom et Prénom -->
+                    <div class="form-group">
+                        <label for="nom">Nom et Prénom *</label>
+                        <input type="text" id="nom" required placeholder="Ex: Jean Dupont">
+                    </div>
+
+                    <!-- Date de naissance -->
+                    <div class="form-group">
+                        <label for="dateNaissance">Date de naissance / Âge *</label>
+                        <input type="date" id="dateNaissance" required>
+                    </div>
+
+                    <!-- Sexe -->
+                    <div class="form-group">
+                        <label for="sexe">Sexe *</label>
+                        <select id="sexe" required>
+                            <option value="">Sélectionner...</option>
+                            <option value="Homme">Homme</option>
+                            <option value="Femme">Femme</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+
+                    <!-- Lieu de résidence -->
+                    <div class="form-group">
+                        <label for="residence">Lieu de résidence</label>
+                        <input type="text" id="residence" placeholder="Ville, Quartier">
+                    </div>
+
+                    <!-- Téléphone -->
+                    <div class="form-group">
+                        <label for="telephone">Téléphone</label>
+                        <input type="tel" id="telephone" placeholder="+225 00 00 00 00">
+                    </div>
+
+                    <!-- Personne à contacter -->
+                    <div class="form-group">
+                        <label for="contactUrgence">Personne à contacter en cas d'urgence</label>
+                        <input type="text" id="contactUrgence" placeholder="Nom du contact">
+                    </div>
+
+                    <!-- Lien avec cette personne -->
+                    <div class="form-group">
+                        <label for="lien">Lien avec cette personne</label>
+                        <input type="text" id="lien" placeholder="Ex: Conjoint, Parent, Ami">
+                    </div>
+
+                    <!-- Profession -->
+                    <div class="form-group">
+                        <label for="profession">Profession</label>
+                        <input type="text" id="profession" placeholder="Ex: Enseignant, Commerçant">
+                    </div>
+
+                    <!-- Numéro de dossier -->
+                    <div class="form-group">
+                        <label for="numDossier">Numéro de dossier ou identifiant patient</label>
+                        <input type="text" id="numDossier" placeholder="Généré automatiquement si vide">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Enregistrer le Patient</button>
+            </form>
+        </div>
+
+        <!-- Liste des patients (Tableau enrichi) -->
+        <div class="card">
+            <h2>Liste des Patients Enregistrés</h2>
+            <div class="table-responsive">
+                <table id="patientTable">
+                    <thead>
+                        <tr>
+                            <th>N° Dossier</th>
+                            <th>Nom et Prénom</th>
+                            <th>Âge</th>
+                            <th>Sexe</th>
+                            <th>Résidence</th>
+                            <th>Téléphone</th>
+                            <th>Contact Urgence</th>
+                            <th>Lien</th>
+                            <th>Profession</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Les lignes seront ajoutées ici par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Carousel Logic ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const totalSlides = slides.length;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % totalSlides;
+            slides[currentSlide].classList.add('active');
+        }
+
+        // Change d'image toutes les 4 secondes
+        setInterval(nextSlide, 4000);
+
+        // --- Gestion des Patients ---
+        let patients = JSON.parse(localStorage.getItem('patients')) || [];
+
+        function calculerAge(dateNaissance) {
+            const today = new Date();
+            const birthDate = new Date(dateNaissance);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        function genererID() {
+            return 'PAT-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        }
+
+        function afficherPatients() {
+            const tbody = document.querySelector('#patientTable tbody');
+            tbody.innerHTML = '';
+
+            patients.forEach((patient, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${patient.numDossier}</td>
+                    <td>${patient.nom}</td>
+                    <td>${patient.age} ans</td>
+                    <td>${patient.sexe}</td>
+                    <td>${patient.residence || '-'}</td>
+                    <td>${patient.telephone || '-'}</td>
+                    <td>${patient.contactUrgence || '-'}</td>
+                    <td>${patient.lien || '-'}</td>
+                    <td>${patient.profession || '-'}</td>
+                    <td><button class="btn-delete" onclick="supprimerPatient(${index})">Supprimer</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function supprimerPatient(index) {
+            if(confirm("Voulez-vous vraiment supprimer ce patient ?")) {
+                patients.splice(index, 1);
+                localStorage.setItem('patients', JSON.stringify(patients));
+                afficherPatients();
+            }
+        }
+
+        document.getElementById('patientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nom = document.getElementById('nom').value;
+            const dateNaissance = document.getElementById('dateNaissance').value;
+            const sexe = document.getElementById('sexe').value;
+            const residence = document.getElementById('residence').value;
+            const telephone = document.getElementById('telephone').value;
+            const contactUrgence = document.getElementById('contactUrgence').value;
+            const lien = document.getElementById('lien').value;
+            const profession = document.getElementById('profession').value;
+            let numDossier = document.getElementById('numDossier').value;
+
+            if (!numDossier) {
+                numDossier = genererID();
+            }
+
+            const age = calculerAge(dateNaissance);
+
+            const nouveauPatient = {
+                numDossier,
+                nom,
+                dateNaissance,
+                age,
+                sexe,
+                residence,
+                telephone,
+                contactUrgence,
+                lien,
+                profession
+            };
+
+            patients.push(nouveauPatient);
+            localStorage.setItem('patients', JSON.stringify(patients));
+
+            afficherPatients();
+            this.reset();
+            alert('Patient enregistré avec succès !');
+        });
+
+        afficherPatients();
+    </script>
+</body>
+</html>

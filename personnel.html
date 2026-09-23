@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hope Clinique - Gestion du Personnel</title>
+    <style>
+        /* --- Variables et Reset --- */
+        :root {
+            --primary-color: #2ecc71;
+            --primary-dark: #27ae60;
+            --secondary-color: #34495e;
+            --bg-color: #f4f7f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--secondary-color);
+            line-height: 1.6;
+        }
+
+        /* --- Bannière avec Carousel --- */
+        header {
+            position: relative;
+            height: 350px;
+            max-width: 1100px;
+            margin: 20px auto 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+            z-index: 2;
+        }
+
+        header h1, header p, header .btn-personnel {
+            position: relative;
+            z-index: 3;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-weight: bold;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            font-weight: normal;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        .btn-personnel {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            font-family: 'Times New Roman', Times, serif;
+            border-radius: 5px;
+            border: 2px solid var(--white);
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-personnel:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* --- Conteneur Principal --- */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto 50px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- Carte --- */
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            margin-bottom: 30px;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .card h2 {
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        /* --- Grille de Formulaire --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .form-group input, 
+        .form-group select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Times New Roman', Times, serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(46, 204, 113, 0.3);
+        }
+
+        /* --- Boutons --- */
+        .btn-submit {
+            grid-column: 1 / -1;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Times New Roman', Times, serif;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* --- Tableau --- */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: var(--secondary-color);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: 'Times New Roman', Times, serif;
+            white-space: nowrap;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        /* --- Badges de statut de présence --- */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-present { background-color: #2ecc71; }
+        .badge-absent { background-color: #e74c3c; }
+        .badge-retard { background-color: #f39c12; }
+        .badge-conge { background-color: #3498db; }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            header { height: 220px; }
+            header h1 { font-size: 1.6rem; }
+            header p { font-size: 0.9rem; }
+            .btn-personnel { padding: 8px 18px; font-size: 0.9rem; }
+            .card { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bannière avec Carousel et Bouton -->
+    <header>
+        <div class="carousel" id="carousel">
+            <div class="carousel-slide active" style="background-image: url('doc2.jpg');"></div>
+            <div class="carousel-slide" style="background-image: url('doc3.jpg');"></div>
+            <div class="carousel-slide" style="background-image: url('doc3.jpg');"></div>
+        </div>
+        <div class="carousel-overlay"></div>
+        <h1>Hope Clinique</h1>
+        <p>Gestion du Personnel</p>
+        <a href="index.html" class="btn-personnel">Retour aux Patients</a>
+    </header>
+
+    <div class="container">
+        <!-- Formulaire d'identification du personnel -->
+        <div class="card">
+            <h2>Identification du Personnel</h2>
+            <form id="personnelForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nom">Nom et Prénom *</label>
+                        <input type="text" id="nom" required placeholder="Ex: Dr. Jean Dupont">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateNaissance">Date de naissance *</label>
+                        <input type="date" id="dateNaissance" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sexe">Sexe *</label>
+                        <select id="sexe" required>
+                            <option value="">Sélectionner...</option>
+                            <option value="Homme">Homme</option>
+                            <option value="Femme">Femme</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poste">Poste / Fonction *</label>
+                        <select id="poste" required>
+                            <option value="">Sélectionner...</option>
+                            <option value="Médecin">Médecin</option>
+                            <option value="Infirmier(ère)">Infirmier(ère)</option>
+                            <option value="Pharmacien">Pharmacien</option>
+                            <option value="Laborantin">Laborantin</option>
+                            <option value="Secrétaire">Secrétaire</option>
+                            <option value="Agent d'entretien">Agent d'entretien</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="specialite">Spécialité</label>
+                        <input type="text" id="specialite" placeholder="Ex: Cardiologie, Pédiatrie">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="matricule">Numéro de matricule ou identifiant</label>
+                        <input type="text" id="matricule" placeholder="Généré automatiquement si vide">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telephone">Téléphone</label>
+                        <input type="tel" id="telephone" placeholder="+225 00 00 00 00">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Adresse email</label>
+                        <input type="email" id="email" placeholder="exemple@hopital.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adresse">Adresse / Lieu de résidence</label>
+                        <input type="text" id="adresse" placeholder="Ville, Quartier">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateEmbauche">Date d'embauche</label>
+                        <input type="date" id="dateEmbauche">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salaire">Salaire mensuel (FCFA)</label>
+                        <input type="number" id="salaire" placeholder="Ex: 250000">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Enregistrer le Membre du Personnel</button>
+            </form>
+        </div>
+
+        <!-- Liste du personnel -->
+        <div class="card">
+            <h2>Liste du Personnel Enregistré</h2>
+            <div class="table-responsive">
+                <table id="personnelTable">
+                    <thead>
+                        <tr>
+                            <th>Matricule</th>
+                            <th>Nom et Prénom</th>
+                            <th>Âge</th>
+                            <th>Sexe</th>
+                            <th>Poste</th>
+                            <th>Spécialité</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th>Adresse</th>
+                            <th>Date d'embauche</th>
+                            <th>Salaire</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Lignes ajoutées par JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION GESTION DES PRÉSENCES -->
+        <div class="card">
+            <h2>Gestion des Présences</h2>
+
+            <!-- Formulaire de pointage -->
+            <form id="presenceForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="presenceMembre">Membre du Personnel *</label>
+                        <select id="presenceMembre" required>
+                            <option value="">Sélectionner un membre...</option>
+                            <!-- Options remplies dynamiquement -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="presenceDate">Date *</label>
+                        <input type="date" id="presenceDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="heureArrivee">Heure d'arrivée</label>
+                        <input type="time" id="heureArrivee">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="heureDepart">Heure de départ</label>
+                        <input type="time" id="heureDepart">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="statutPresence">Statut *</label>
+                        <select id="statutPresence" required>
+                            <option value="">Sélectionner...</option>
+                            <option value="Présent">Présent</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Retard">Retard</option>
+                            <option value="Congé">Congé</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="commentairePresence">Commentaire</label>
+                        <input type="text" id="commentairePresence" placeholder="Ex: Justification, remarque">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Enregistrer la Présence</button>
+            </form>
+        </div>
+
+        <!-- Historique des présences -->
+        <div class="card">
+            <h2>Historique des Présences</h2>
+            <div class="table-responsive">
+                <table id="presenceTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Matricule</th>
+                            <th>Nom et Prénom</th>
+                            <th>Poste</th>
+                            <th>Arrivée</th>
+                            <th>Départ</th>
+                            <th>Statut</th>
+                            <th>Commentaire</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Lignes ajoutées par JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Carousel Logic ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const totalSlides = slides.length;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % totalSlides;
+            slides[currentSlide].classList.add('active');
+        }
+        setInterval(nextSlide, 4000);
+
+        // --- Gestion du Personnel ---
+        let personnel = JSON.parse(localStorage.getItem('personnel')) || [];
+        let presences = JSON.parse(localStorage.getItem('presences')) || [];
+
+        function calculerAge(dateNaissance) {
+            const today = new Date();
+            const birthDate = new Date(dateNaissance);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+            return age;
+        }
+
+        function genererMatricule() {
+            return 'EMP-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR');
+        }
+
+        function afficherPersonnel() {
+            const tbody = document.querySelector('#personnelTable tbody');
+            tbody.innerHTML = '';
+
+            personnel.forEach((membre, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${membre.matricule}</td>
+                    <td>${membre.nom}</td>
+                    <td>${membre.age} ans</td>
+                    <td>${membre.sexe}</td>
+                    <td>${membre.poste}</td>
+                    <td>${membre.specialite || '-'}</td>
+                    <td>${membre.telephone || '-'}</td>
+                    <td>${membre.email || '-'}</td>
+                    <td>${membre.adresse || '-'}</td>
+                    <td>${formatDate(membre.dateEmbauche)}</td>
+                    <td>${membre.salaire ? parseInt(membre.salaire).toLocaleString('fr-FR') + ' FCFA' : '-'}</td>
+                    <td><button class="btn-delete" onclick="supprimerMembre(${index})">Supprimer</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Mettre à jour le select du formulaire de présence
+            const select = document.getElementById('presenceMembre');
+            select.innerHTML = '<option value="">Sélectionner un membre...</option>';
+            personnel.forEach((membre) => {
+                const option = document.createElement('option');
+                option.value = membre.matricule;
+                option.textContent = `${membre.matricule} - ${membre.nom} (${membre.poste})`;
+                select.appendChild(option);
+            });
+        }
+
+        function supprimerMembre(index) {
+            if(confirm("Voulez-vous vraiment supprimer ce membre du personnel ?")) {
+                personnel.splice(index, 1);
+                localStorage.setItem('personnel', JSON.stringify(personnel));
+                afficherPersonnel();
+            }
+        }
+
+        document.getElementById('personnelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nom = document.getElementById('nom').value;
+            const dateNaissance = document.getElementById('dateNaissance').value;
+            const sexe = document.getElementById('sexe').value;
+            const poste = document.getElementById('poste').value;
+            const specialite = document.getElementById('specialite').value;
+            let matricule = document.getElementById('matricule').value;
+            const telephone = document.getElementById('telephone').value;
+            const email = document.getElementById('email').value;
+            const adresse = document.getElementById('adresse').value;
+            const dateEmbauche = document.getElementById('dateEmbauche').value;
+            const salaire = document.getElementById('salaire').value;
+
+            if (!matricule) matricule = genererMatricule();
+            const age = calculerAge(dateNaissance);
+
+            const nouveauMembre = {
+                matricule, nom, dateNaissance, age, sexe, poste,
+                specialite, telephone, email, adresse, dateEmbauche, salaire
+            };
+
+            personnel.push(nouveauMembre);
+            localStorage.setItem('personnel', JSON.stringify(personnel));
+            afficherPersonnel();
+            this.reset();
+            alert('Membre du personnel enregistré avec succès !');
+        });
+
+        // --- Gestion des Présences ---
+        function afficherPresences() {
+            const tbody = document.querySelector('#presenceTable tbody');
+            tbody.innerHTML = '';
+
+            presences.forEach((p, index) => {
+                const membre = personnel.find(m => m.matricule === p.matricule) || {};
+                const badgeClass = {
+                    'Présent': 'badge-present',
+                    'Absent': 'badge-absent',
+                    'Retard': 'badge-retard',
+                    'Congé': 'badge-conge'
+                }[p.statut] || '';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(p.date)}</td>
+                    <td>${p.matricule}</td>
+                    <td>${membre.nom || '-'}</td>
+                    <td>${membre.poste || '-'}</td>
+                    <td>${p.heureArrivee || '-'}</td>
+                    <td>${p.heureDepart || '-'}</td>
+                    <td><span class="badge ${badgeClass}">${p.statut}</span></td>
+                    <td>${p.commentaire || '-'}</td>
+                    <td><button class="btn-delete" onclick="supprimerPresence(${index})">Supprimer</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function supprimerPresence(index) {
+            if(confirm("Voulez-vous vraiment supprimer cette présence ?")) {
+                presences.splice(index, 1);
+                localStorage.setItem('presences', JSON.stringify(presences));
+                afficherPresences();
+            }
+        }
+
+        document.getElementById('presenceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const matricule = document.getElementById('presenceMembre').value;
+            const date = document.getElementById('presenceDate').value;
+            const heureArrivee = document.getElementById('heureArrivee').value;
+            const heureDepart = document.getElementById('heureDepart').value;
+            const statut = document.getElementById('statutPresence').value;
+            const commentaire = document.getElementById('commentairePresence').value;
+
+            const nouvellePresence = {
+                matricule, date, heureArrivee, heureDepart, statut, commentaire
+            };
+
+            presences.push(nouvellePresence);
+            localStorage.setItem('presences', JSON.stringify(presences));
+            afficherPresences();
+            this.reset();
+            alert('Présence enregistrée avec succès !');
+        });
+
+        // Initialisation
+        afficherPersonnel();
+        afficherPresences();
+
+        // Pré-remplir la date du jour dans le formulaire de présence
+        document.getElementById('presenceDate').valueAsDate = new Date();
+    </script>
+</body>
+</html>
